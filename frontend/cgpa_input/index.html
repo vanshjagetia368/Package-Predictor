@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0d0b;
+  --surface: #111612;
+  --surface-2: #161d17;
+  --line: rgba(236, 239, 230, 0.09);
+  --line-strong: rgba(236, 239, 230, 0.2);
+  --text: #ecefe6;
+  --muted: #8d978a;
+  --lime: #d4ff3a;
+  --ember: #ff7a45;
+  --p: 70%;
+  --display: 'Bricolage Grotesque', 'Helvetica Neue', Arial, sans-serif;
+  --body: 'Instrument Sans', 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: transparent;
+  color: var(--text);
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body { padding: 6px; }
+
+.card {
+  position: relative;
+  overflow: hidden;
+  padding: 1.8rem;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    radial-gradient(90% 70% at 100% 0%, rgba(212, 255, 58, 0.09), transparent 60%),
+    var(--surface);
+  animation: enter 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateY(26px) scale(0.98); }
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--lime), transparent);
+  transform: translateX(-100%);
+  animation: sweep 3.4s 0.8s ease-in-out infinite;
+}
+
+@keyframes sweep { to { transform: translateX(100%); } }
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mood {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lime);
+  transition: transform 0.25s ease;
+}
+
+.mood.pop { animation: pop 0.35s ease; }
+
+@keyframes pop { 50% { transform: scale(1.12); } }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.field {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface-2);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field:focus-within {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 5px rgba(212, 255, 58, 0.12);
+}
+
+.field.bad {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 5px rgba(255, 122, 69, 0.14);
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+#num {
+  width: 100%;
+  max-width: 230px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  text-align: center;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(3rem, 12vw, 4.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--lime);
+  caret-color: var(--ember);
+}
+
+#num.tick { animation: tick 0.18s ease; }
+
+@keyframes tick { 50% { transform: scale(1.05); } }
+
+.outof {
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.step {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.step:hover {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--bg);
+  transform: translateY(-2px);
+}
+
+.step:active { transform: scale(0.92); }
+
+.slider { margin: 1.8rem 0.2rem 0.4rem; }
+
+#rng {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--ember), var(--lime)) 0 0 / var(--p) 100% no-repeat, #1d251e;
+}
+
+#rng::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border: 4px solid var(--bg);
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 2px var(--lime), 0 0 22px rgba(212, 255, 58, 0.55);
+  transition: transform 0.2s ease;
+}
+
+#rng::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 4px solid var(--bg);
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 0 2px var(--lime), 0 0 22px rgba(212, 255, 58, 0.55);
+}
+
+#rng:hover::-webkit-slider-thumb,
+#rng:active::-webkit-slider-thumb { transform: scale(1.18); }
+
+.ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.4rem 0 1.6rem;
+}
+
+.chip {
+  padding: 0.45rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--lime);
+  color: var(--lime);
+  transform: translateY(-2px);
+}
+
+.chip.on {
+  border-color: var(--lime);
+  background: rgba(212, 255, 58, 0.12);
+  color: var(--lime);
+}
+
+.go {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 1.15rem 1.5rem;
+  border: 0;
+  border-radius: 18px;
+  background: var(--lime);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: var(--bg);
+  cursor: pointer;
+  animation: glow 2.6s ease-in-out infinite;
+  transition: transform 0.25s ease;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 255, 58, 0.45); }
+  50% { box-shadow: 0 0 0 14px rgba(212, 255, 58, 0); }
+}
+
+.go::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.2s 1.2s ease-in-out infinite;
+}
+
+@keyframes shine { to { left: 130%; } }
+
+.go:hover { transform: translateY(-3px); }
+.go:active { transform: scale(0.98); }
+
+.go svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
+}
+
+.go:hover svg { transform: translateX(6px); }
+
+.go:disabled {
+  background: #2a322b;
+  color: var(--muted);
+  cursor: not-allowed;
+  animation: none;
+}
+
+.go:disabled::after { display: none; }
+
+.go.busy { pointer-events: none; }
+
+.go.busy svg { animation: spin 0.7s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hint {
+  min-height: 1.2rem;
+  margin-top: 0.9rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.hint.err { color: var(--ember); }
+
+@media (max-width: 520px) {
+  .card { padding: 1.2rem; }
+  .step { width: 44px; height: 44px; }
+  .row { gap: 0.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="top">
+    <span class="label">Enter your CGPA</span>
+    <span class="mood" id="mood">Solid</span>
+  </div>
+  <div class="row">
+    <button class="step" id="minus" type="button" aria-label="Decrease CGPA">−</button>
+    <div class="field" id="field">
+      <input id="num" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="5" value="7.00" aria-label="CGPA">
+      <span class="outof">/ 10</span>
+    </div>
+    <button class="step" id="plus" type="button" aria-label="Increase CGPA">+</button>
+  </div>
+  <div class="slider">
+    <input id="rng" type="range" min="0" max="10" step="0.01" value="7" aria-label="CGPA slider">
+    <div class="ticks"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span></div>
+  </div>
+  <div class="chips" id="chips">
+    <button class="chip" type="button" data-v="5">5.0</button>
+    <button class="chip" type="button" data-v="6">6.0</button>
+    <button class="chip" type="button" data-v="7">7.0</button>
+    <button class="chip" type="button" data-v="8">8.0</button>
+    <button class="chip" type="button" data-v="9">9.0</button>
+  </div>
+  <button class="go" id="go" type="button">
+    <span id="goText">Predict my package</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+  <p class="hint" id="hint">Type a value or drag the slider. Both stay in sync.</p>
+</div>
+<script>
+(function () {
+  var num = document.getElementById('num');
+  var rng = document.getElementById('rng');
+  var field = document.getElementById('field');
+  var mood = document.getElementById('mood');
+  var go = document.getElementById('go');
+  var goText = document.getElementById('goText');
+  var hint = document.getElementById('hint');
+  var chips = document.querySelectorAll('.chip');
+  var card = document.getElementById('card');
+  var value = 7;
+  var valid = true;
+  var ready = false;
+  var lastMood = '';
+
+  function post(type, data) {
+    var msg = { isStreamlitMessage: true, type: type };
+    for (var k in data) msg[k] = data[k];
+    window.parent.postMessage(msg, '*');
+  }
+
+  function fitHeight() {
+    post('streamlit:setFrameHeight', { height: card.offsetHeight + 16 });
+  }
+
+  function moodFor(v) {
+    if (v < 5) return 'Room to grow';
+    if (v < 6) return 'Steady';
+    if (v < 7) return 'Solid';
+    if (v < 8) return 'Strong';
+    if (v < 9) return 'Excellent';
+    return 'Outstanding';
+  }
+
+  function paint(v) {
+    rng.value = v;
+    rng.style.setProperty('--p', (v / 10 * 100) + '%');
+    var m = moodFor(v);
+    if (m !== lastMood) {
+      mood.textContent = m;
+      mood.classList.remove('pop');
+      void mood.offsetWidth;
+      mood.classList.add('pop');
+      lastMood = m;
+    }
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].classList.toggle('on', Math.abs(parseFloat(chips[i].dataset.v) - v) < 0.005);
+    }
+  }
+
+  function setValid(ok, msg) {
+    valid = ok;
+    go.disabled = !ok;
+    field.classList.toggle('bad', !ok && msg !== '');
+    hint.textContent = msg || 'Type a value or drag the slider. Both stay in sync.';
+    hint.classList.toggle('err', !ok && msg !== '');
+  }
+
+  function bump() {
+    num.classList.remove('tick');
+    void num.offsetWidth;
+    num.classList.add('tick');
+  }
+
+  function fromText() {
+    var cleaned = num.value.replace(',', '.').replace(/[^0-9.]/g, '');
+    var parts = cleaned.split('.');
+    if (parts.length > 2) cleaned = parts[0] + '.' + parts.slice(1).join('');
+    if (cleaned !== num.value) num.value = cleaned;
+    if (cleaned === '' || cleaned === '.') {
+      setValid(false, 'Enter a CGPA between 0 and 10');
+      return;
+    }
+    var v = parseFloat(cleaned);
+    if (isNaN(v)) {
+      setValid(false, 'Enter a CGPA between 0 and 10');
+      return;
+    }
+    if (v > 10) {
+      paint(10);
+      setValid(false, 'CGPA cannot be more than 10');
+      return;
+    }
+    value = v;
+    paint(v);
+    setValid(true, '');
+    bump();
+  }
+
+  function fromSlider() {
+    var v = Math.round(parseFloat(rng.value) * 100) / 100;
+    value = v;
+    num.value = v.toFixed(2);
+    paint(v);
+    setValid(true, '');
+    bump();
+  }
+
+  function nudge(d) {
+    var v = Math.min(10, Math.max(0, Math.round((value + d) * 100) / 100));
+    value = v;
+    num.value = v.toFixed(2);
+    paint(v);
+    setValid(true, '');
+    bump();
+  }
+
+  function normalise() {
+    if (!valid) {
+      num.value = value.toFixed(2);
+      paint(value);
+      setValid(true, '');
+      return;
+    }
+    num.value = value.toFixed(2);
+  }
+
+  num.addEventListener('input', fromText);
+  num.addEventListener('blur', normalise);
+  num.addEventListener('focus', function () { num.select(); });
+  num.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); submit(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); nudge(0.01); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); nudge(-0.01); }
+  });
+  rng.addEventListener('input', fromSlider);
+  document.getElementById('minus').addEventListener('click', function () { nudge(-0.1); });
+  document.getElementById('plus').addEventListener('click', function () { nudge(0.1); });
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].addEventListener('click', function () {
+      var v = parseFloat(this.dataset.v);
+      value = v;
+      num.value = v.toFixed(2);
+      paint(v);
+      setValid(true, '');
+      bump();
+    });
+  }
+
+  function submit() {
+    if (!valid || go.classList.contains('busy')) return;
+    normalise();
+    go.classList.add('busy');
+    goText.textContent = 'Crunching the numbers';
+    setTimeout(function () {
+      post('streamlit:setComponentValue', {
+        value: { cgpa: value, ts: Date.now() },
+        dataType: 'json'
+      });
+    }, 450);
+  }
+
+  go.addEventListener('click', submit);
+
+  window.addEventListener('message', function (event) {
+    if (!event.data || event.data.type !== 'streamlit:render') return;
+    if (!ready) {
+      var init = event.data.args && event.data.args.initial;
+      if (typeof init === 'number' && init >= 0 && init <= 10) {
+        value = Math.round(init * 100) / 100;
+        num.value = value.toFixed(2);
+      }
+      paint(value);
+      ready = true;
+    }
+    fitHeight();
+  });
+
+  window.addEventListener('resize', fitHeight);
+  paint(value);
+  post('streamlit:componentReady', { apiVersion: 1 });
+  fitHeight();
+})();
+</script>
+</body>
+</html>
