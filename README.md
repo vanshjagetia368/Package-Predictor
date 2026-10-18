@@ -21,7 +21,7 @@
 
 **Type in a CGPA. Press predict. See your package, and exactly where you stand.**
 
-[🚀 Live Demo](https://YOUR-APP-NAME.onrender.com) · [📓 Notebook](notebook/Linear_Regression_Combined.ipynb) · [📊 Metrics Analysis](#-regression-metrics-the-complete-analysis) · [🛠 Deployment Guide](DEPLOYMENT.md)
+[🚀 Live Demo](https://placement-package-predictor.onrender.com/) · [📓 Notebook](notebook/Linear_Regression_Combined.ipynb) · [📊 Metrics Analysis](#-regression-metrics-the-complete-analysis) · [🛠 Deployment Guide](DEPLOYMENT.md)
 
 </div>
 
