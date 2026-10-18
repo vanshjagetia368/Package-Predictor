@@ -655,8 +655,8 @@ placement-predictor/
 ## 💻 Run it locally
 
 ```bash
-git 
-cd placement-predictor
+git clone https://github.com/vanshjagetia368/Package-Predictor.git
+cd Package-Predictor
 
 python -m venv .venv
 source .venv/bin/activate
